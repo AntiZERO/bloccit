@@ -65,7 +65,7 @@ module.exports = {
       if(err || topic == null){
         res.redirect(404, `/topics/${req.params.id}/edit`);
       } else {
-        res.redirect(`/topics/$[topic.id}`);
+        res.redirect(`/topics/${topic.id}`);
       }
     });
   }
