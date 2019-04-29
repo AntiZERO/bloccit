@@ -6,17 +6,19 @@
   <body>
     <main class="container">
       <% include ../static/partials/navbar.ejs %>
-
-      <h1>Topics</h1>
-
+      <h1>Flairs</h1>
       <ul class="list-group">
-        <% topics.forEach((topic) => { %>
+        <% flairs.forEach((flair) => { %>
           <li class="list-group-item">
-            <a href="/topics/<%= topic.id %>"> <%= topic.title %> </a>
+            <a href="/flairs/<%= flair.id %>">
+              <%= flair.name %>
+              <button style = "background: <%= flair.color %>">
+                <%= flair.name %>
+              </button>
+            </a>
           </li>
         <% }) %>
       </ul>
-
     </main>
   </body>
 </html>
