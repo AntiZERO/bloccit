@@ -19,7 +19,7 @@ module.exports = {
     
     validateTopics(req, res, next) {
       if(req.method === "POST") {
-        req.checkBody("title", "must be at least 2 characters in length").isLength({min: 2});
+        req.checkBody("title", "must be at least 5 characters in length").isLength({min: 5});
         req.checkBody("description", "must be at least 10 characters in length").isLength({min: 10});
       }
       
