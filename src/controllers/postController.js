@@ -47,7 +47,9 @@ module.exports = {
       if (err || post == null) {
         res.redirect(404, "/");
       } else {
+
         const authorized = new Authorizer(req.user, post).edit();
+
         if (authorized) {
           res.render("posts/edit", { post });
         } else {
@@ -57,22 +59,24 @@ module.exports = {
       }
     });
   },
+
   destroy(req, res, next) {
     postQueries.deletePost(req, (err, post) => {
       if (err) {
         res.redirect(
           typeof err === "number" ? err : 500,
-          `topics/${req.params.id}`
+          `/topics/${req.params.topicId}/posts/${req.params.id}`
         );
       } else {
         res.redirect(303, "/topics")
       }
     });
   },
+  
   update(req, res, next) {
-    postQueries.updatePost(req, req.body, (err, postQuepostries) => {
+    postQueries.updatePost(req, req.body, (err, postQueries) => {
       if (err || post == null) {
-        res.redirect(401, `/topics/${req.params.id}/edit`);
+        res.redirect(401, `/topics/${req.params.topicId}/posts/${req.params.id}/edit`);
       } else {
         res.redirect(`/topics/${req.params.id}`);
       }

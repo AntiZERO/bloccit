@@ -3,6 +3,16 @@ const Authorizer = require("../policies/post");
 
 module.exports = {
 
+  getAllPosts(callback) {
+    return Post.all()
+      .then((posts) => {
+        callback(null, posts);
+      })
+      .catch((err) => {
+        callback(err);
+      })
+  },
+
   addPost(newPost, callback) {
     return Post.create(newPost)
       .then((post) => {
@@ -41,7 +51,7 @@ module.exports = {
         callback(err);
       })
   },
-  updatePost(id, updatedPost, callback) {
+  updatePost(req, updatedPost, callback) {
     return Post.findById(req.params.id)
       .then((post) => {
         if (!post) {

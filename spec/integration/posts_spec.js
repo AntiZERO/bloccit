@@ -264,7 +264,7 @@ describe("routes : posts", () => {
 
     describe("POST /topics/:topicId/posts/:id/update", () => {
 
-      it("should update the post  with the given values", (done) => {
+      it("should update the post with the given values", (done) => {
         request.post({
           url: `${base}${this.topic.id}/posts/${this.post.id}/update`,
           form: {
@@ -278,6 +278,7 @@ describe("routes : posts", () => {
           })
             .then((post) => {
               expect(post.title).toBe("Snowman Building Competition");
+              expect(post.body).toBe("I love watching them melt slowly.");
               done();
             });
         });
