@@ -19,7 +19,7 @@ module.exports = class ApplicationPolicy {
  
   // `new` checks that a user is present. `create` delegates to `new`. `show` always authorizes the action.
    new() {
-     return this.user != null;
+     return !!this.user;
    }
  
    create() {
