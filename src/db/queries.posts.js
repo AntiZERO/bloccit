@@ -1,5 +1,6 @@
 const Post = require("./models").Post;
 const Topic = require("./models").Topic;
+const Authorizer = require("../policies/post.js");
 
 module.exports = {
 

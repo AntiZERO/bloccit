@@ -16,6 +16,10 @@ module.exports = class ApplicationPolicy {
    _isAdmin() {
      return this.user && this.user.role == "admin";
    }
+
+   _isMember() {
+     return this.user && this.user.role == "member";
+   }
  
   // `new` checks that a user is present. `create` delegates to `new`. `show` always authorizes the action.
    new() {
