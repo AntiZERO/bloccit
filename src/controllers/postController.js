@@ -1,10 +1,12 @@
 const postQueries = require("../db/queries.posts.js");
-const Authorizer = require("../policies/topic");
+const Authorizer = require("../policies/post");
 
 module.exports = {
 
   new(req, res, next){
+
     const authorized = new Authorizer(req.user).new();
+    console.log(authorized)
 
     if (authorized) {
       res.render("posts/new", {topicId: req.params.topicId});
@@ -21,6 +23,7 @@ module.exports = {
       userId: req.user.id
     };
     postQueries.addPost(newPost, (err, post) => {
+      console.log(err);
       if(err){
         res.redirect(500, "/posts/new");
       } else {
