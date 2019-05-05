@@ -1,48 +1,50 @@
-const request = require("request");
-const server = require("../../src/server");
-const base = "http://localhost:3000/topics";
-const sequelize = require("../../src/db/models/index").sequelize;
-const Topic = require("../../src/db/models").Topic;
-const Post = require("../../src/db/models").Post;
-const User = require("../../src/db/models").User;
+const request = require('request');
+const server = require('../../src/server');
+const base = 'http://localhost:3000/topics';
 
-describe("routes : posts", () => {
+const sequelize = require('../../src/db/models/index').sequelize;
+const Topic = require('../../src/db/models').Topic;
+const Post = require('../../src/db/models').Post;
+const User = require('../../src/db/models').User;
 
-  beforeEach((done) => {
+describe('routes : posts', () => {
+  beforeEach(done => {
     this.topic;
     this.post;
     this.user;
 
-    sequelize.sync({ force: true }).then((res) => {
+    sequelize.sync({ force: true }).then(res => {
       User.create({
-        email: "starman@tesla.com",
-        password: "Trekkie4lyfe"
-      })
-        .then((user) => {
-          this.user = user;
+        email: 'starman@tesla.com',
+        password: 'Trekkie4lyfe'
+      }).then(user => {
+        this.user = user;
 
-          Topic.create({
-            title: "Winter Games",
-            description: "Post your Winter Games stories.",
-            posts: [{
-              title: "Snowball Fighting",
-              body: "So much snow!",
-              userId: this.user.id
-            }]
-          }, {
-              include: {
-                model: Post,
-                as: "posts"
+        Topic.create(
+          {
+            title: 'Winter Games',
+            description: 'Post your Winter Games stories.',
+            posts: [
+              {
+                title: 'Snowball Fighting',
+                body: 'So much snow!',
+                userId: this.user.id
               }
-            })
-            .then((topic) => {
-              this.topic = topic;
-              this.post = topic.posts[0];
-              done();
-            })
-        })
+            ]
+          },
+          {
+            include: {
+              model: Post,
+              as: 'posts'
+            }
+          }
+        ).then(topic => {
+          this.topic = topic;
+          this.post = topic.posts[0];
+          done();
+        });
+      });
     });
-
   });
 
   /* guests have access to show action only */
@@ -62,7 +64,7 @@ describe("routes : posts", () => {
     });
 
     describe('GET /topics/:topicId/posts/:id', () => {
-     fit('should render a view with the selected post', done => {
+      it('should render a view with the selected post', done => {
         request.get(
           `${base}/${this.topic.id}/posts/${this.post.id}`,
           (err, res, body) => {
@@ -73,10 +75,10 @@ describe("routes : posts", () => {
         );
       });
     });
-
+    
   });
 
-  /* members can view all posts, create new posts, and edit/delete the posts they are the owner (creator) of.*/
+  /* member role test suite */
   describe('member user performing CRUD actions for Posts', () => {
     beforeEach(done => {
       User.create({
@@ -99,17 +101,15 @@ describe("routes : posts", () => {
         );
       });
     });
-    
     describe('GET /topics/:topicId/posts/new', () => {
-     fit('should render new post form', done => {
+      it('should render new post form', done => {
         request.get(`${base}/${this.topic.id}/posts/new`, (err, res, body) => {
           expect(err).toBeNull();
-          expect(body).toContain("New Post");
+          expect(body).toContain('New Post');
           done();
         });
       });
     });
-
     describe('POST /topics/:topicId/posts/create', () => {
       it('should create a new post and redirect', done => {
         const options = {
@@ -221,7 +221,7 @@ describe("routes : posts", () => {
     });
   });
 
-  /* admins can view all posts, create new posts, and edit/delete any post */
+  /* admin role test suite */
   describe('admin user performing CRUD actions for Posts', () => {
     beforeEach(done => {
       User.create({
@@ -244,7 +244,6 @@ describe("routes : posts", () => {
         );
       });
     });
-
     describe('GET /topics/:topicId/posts/new', () => {
       it('should render new post form', done => {
         request.get(`${base}/${this.topic.id}/posts/new`, (err, res, body) => {
@@ -254,7 +253,6 @@ describe("routes : posts", () => {
         });
       });
     });
-
     describe('POST /topics/:topicId/posts/create', () => {
       it('should create a new post and redirect', done => {
         const options = {
@@ -282,7 +280,6 @@ describe("routes : posts", () => {
             });
         });
       });
-
       it('should not create a new post that fails validations', done => {
         const options = {
           url: `${base}/${this.topic.id}/posts/create`,
@@ -304,7 +301,6 @@ describe("routes : posts", () => {
         });
       });
     });
-
     describe('GET /topics/:topicId/posts/:id', () => {
       it('should render a view with the selected post', done => {
         request.get(
@@ -317,7 +313,6 @@ describe("routes : posts", () => {
         );
       });
     });
-
     describe('POST /topics/:topicId/posts/:id/destroy', () => {
       it('should not delete the post', done => {
         Post.all().then(posts => {
@@ -335,7 +330,6 @@ describe("routes : posts", () => {
         });
       });
     });
-
     describe('GET /topics/:topicId/posts/:id/edit', () => {
       it('should not render a view with an edit post form', done => {
         request.get(
@@ -348,7 +342,6 @@ describe("routes : posts", () => {
         );
       });
     });
-
     describe('POST /topics/:topicId/posts/:id/update', () => {
       it('should not update the post with the given values', done => {
         const options = {
@@ -369,7 +362,5 @@ describe("routes : posts", () => {
         });
       });
     });
-
   });
-
 });
