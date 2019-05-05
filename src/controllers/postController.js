@@ -50,7 +50,7 @@ module.exports = {
   },
 
   destroy(req, res, next) {
-    postQueries.deletePost(req.params.id, (err, deletedRecordsCount) => {
+    postQueries.deletePost(req, (err, deletedRecordsCount) => {
       if (err) {
         console.log(err);
         res.redirect(
