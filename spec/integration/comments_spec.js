@@ -142,7 +142,7 @@ describe("routes : comments", () => {
 
   }); //end contest for guest user
 
-  //Define context for signed in-user
+  //Define context for signed in user
   describe("signed in user performing CRUD actions for Comment", () => {
 
     beforeEach((done) => {    // before each suite in this context
@@ -159,7 +159,6 @@ describe("routes : comments", () => {
       );
     });
 
-    // Ensure signed in user is able to create a comment.
     describe("POST /topics/:topicId/posts/:postId/comments/create", () => {
 
       it("should create a new comment and redirect", (done) => {
@@ -187,7 +186,92 @@ describe("routes : comments", () => {
       });
     });
 
-    // Ensure a user who is signed in is able to destroy a comment.
+    describe("POST /topics/:topicId/posts/:postId/comments/:id/destroy", () => {
+
+      it("should delete the comment with the associated ID", (done) => {
+        Comment.all()
+          .then((comments) => {
+            const commentCountBeforeDelete = comments.length;
+
+            expect(commentCountBeforeDelete).toBe(1);
+
+            request.post(
+              `${base}${this.topic.id}/posts/${this.post.id}/comments/${this.comment.id}/destroy`,
+              (err, res, body) => {
+                expect(res.statusCode).toBe(302);
+                Comment.all()
+                  .then((comments) => {
+                    expect(err).toBeNull();
+                    expect(comments.length).toBe(commentCountBeforeDelete - 1);
+                    done();
+                  })
+
+              });
+          })
+
+      });
+
+      it("should only delete comments that belong to the signed in user", done => {
+        User.create({
+          email: "neo@theone.com",
+          password: "thereisnospoon"
+        }).then((user) => {
+          request.get(
+            {
+              url: "http://localhost:3000/auth/fake",
+              form: {
+                role: "member",
+                userId: user.id
+              }
+            },
+            (err, res, body) => {
+              done();
+            }
+          )
+        }).catch((err) => {
+          console.log(err);
+          done();
+        })
+
+        Comment.all().then(comments => {
+          const commentCountBeforeDelete = comments.length;
+
+          expect(commentCountBeforeDelete).toBe(1);
+
+          request.post(
+            `${base}${this.topic.id}/posts/${this.post.id}/comments/${this.comment.id}/destroy`,
+            (err, res, body) => {
+              Comment.all().then(comments => {
+                expect(comments.length).toBe(commentCountBeforeDelete);
+                done();
+              });
+            }
+          );
+        });
+      });
+
+    });
+
+
+  }); //end context for signed in user
+
+  //Define context for signed in admin
+  describe("signed in admin performing CRUD actions for Comemnt", () => {
+
+    beforeEach((done) => {
+      request.get({
+        url: "http://localhost:3000/auth/fake",
+        form: {
+          role: "admin",
+          userId: this.user.id
+        }
+      },
+        (err, res, body) => {
+          done();
+        }
+      );
+    });
+
     describe("POST /topics/:topicId/posts/:postId/comments/:id/destroy", () => {
 
       it("should delete the comment with the associated ID", (done) => {
@@ -215,6 +299,6 @@ describe("routes : comments", () => {
 
     });
 
-  }); //end context for signed in user
+  }); //end context for signed in admin
 
 });
