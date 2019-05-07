@@ -1,7 +1,8 @@
 const Post = require("./models").Post;
-// const Topic = require("./models").Topic;
+const Topic = require("./models").Topic;
 const Comment = require("./models").Comment;
 const User = require("./models").User;
+const Vote = require("./models").Vote;
 const Authorizer = require("../policies/post.js");
 
 module.exports = {
@@ -24,11 +25,9 @@ module.exports = {
   // include the associated User.
     return Post.findById(id, {
       include: [
-        {
-          model: Comment, as: "comments", include: [
-            { model: User }
-          ]
-        }
+        {model: Comment, as: "comments", include: [
+            { model: User } ,
+          ]}, { model: Vote, as: "votes"} // // eager load votes when `Post` is retrieved
       ]
     })
       .then((post) => {
