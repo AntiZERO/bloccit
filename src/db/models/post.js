@@ -46,6 +46,21 @@ module.exports = (sequelize, DataTypes) => {
       as: "favorites"
     });
 
+    Post.afterCreate((post, callback) => {
+      return models.Favorite.create({
+        userId: post.userId,
+        postId: post.id
+      });
+    });
+
+/*    Post.afterCreate((post, callback) => {
+      return models.Vote.create({
+        value: 1,
+        postId: post.id,
+        userId: post.userId 
+      });
+    });    -- assignment task completed -- waiting for tech coach for checkpoint error issue. Will uncomment in assignment submission  */
+
   };
 
   Post.prototype.getPoints = function () {
