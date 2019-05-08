@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     topicId: {
-      type:DataTypes.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false
     },
     userId: {
@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {});
 
-  Post.associate = function(models) {
+  Post.associate = function (models) {
     // associations can be defined here
     Post.belongsTo(models.Topic, {
       foreignKey: "topicId",
@@ -43,10 +43,10 @@ module.exports = (sequelize, DataTypes) => {
 
   };
 
-  Post.prototype.getPoints = function(){
+  Post.prototype.getPoints = function () {
 
     // Check to see if the post has any votes. If not, return 0.
-    if(this.votes.length === 0) return 0
+    if (!this.votes || this.votes.length === 0) return 0
 
     // If a post has votes, get a count of all values. Add those values
     // together and return the result. The `map` function transforms the 
@@ -56,6 +56,32 @@ module.exports = (sequelize, DataTypes) => {
     return this.votes
       .map((v) => { return v.value })
       .reduce((prev, next) => { return prev + next });
+  };
+
+  Post.prototype.hasUpvoteFor = function (userId, callback) {
+    return this.getVotes({
+      where: {
+        userId: userId,
+        postId: this.id,
+        value: 1
+      }
+    })
+      .then((votes) => {
+        votes.length != 0 ? callback(true) : callback(false);
+      });
+  };
+
+  Post.prototype.hasDownvoteFor = function (userId, callback) {
+    return this.getVotes({
+      where: {
+        userId: userId,
+        postId: this.id,
+        value: -1
+      }
+    })
+      .then((votes) => {
+        votes.length != 0 ? callback(true) : callback(false);
+      });
   };
 
   return Post;
