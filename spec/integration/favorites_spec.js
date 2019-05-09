@@ -17,6 +17,7 @@ describe("routes : favorites", () => {
     this.user;
     this.topic;
     this.post;
+    this.favorite;
 
     // clear the data, and then create the objects for the tests. 
     sequelize.sync({ force: true }).then((res) => {
@@ -157,23 +158,18 @@ describe("routes : favorites", () => {
 
       it("should destroy a favorite", (done) => {
         const options = {
-          url: `${base}${this.topic.id}/posts/${this.post.id}/favorites/create`
+          url: `${base}${this.topic.id}/posts/${this.post.id}/favorites/destroy`
         };
 
         let favCountBeforeDelete;
 
         request.post(options, (err, res, body) => {
-         // console.log(favorite)
+
           this.post.getFavorites()
             .then((favorites) => {
-              console.log(favorites)
+
               const favorite = favorites[0];
               favCountBeforeDelete = favorites.length;
-              console.log(favorites)
-              console.log("poopy")
-              console.log(this.post)
-              console.log("-----------")
-              console.log(favorite)
 
               request.post(`${base}${this.topic.id}/posts/${this.post.id}/favorites/${favorite.id}/destroy`,
                 (err, res, body) => {
