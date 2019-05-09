@@ -2,6 +2,7 @@
 const User = require("./models").User;
 const Post = require("./models").Post;
 const Comment = require("./models").Comment;
+const Favorite = require("./models").Favorite;
 const bcrypt = require("bcryptjs");
 
 module.exports = {
@@ -25,36 +26,41 @@ module.exports = {
     })
   },
 
-  getUser(id, callback){
-    // define a `result` object to hold the `user`, `posts`, and `comments` that
-    // will be returned and request the `User` object from the database.
-       let result = {};
-       User.findById(id)
-       .then((user) => {
-    // If no user returns, return an error.
-         if(!user) {
-           callback(404);
-         } else {
-    // Otherwise, store the resulting user. 
-           result["user"] = user;
-    // Execute the scope on `Post` to get the last five posts made my the user.
-           Post.scope({method: ["lastFiveFor", id]}).all()
-           .then((posts) => {
-    // we store the result in the `result` object.
-             result["posts"] = posts;
-    // Execute the scope on "Comment" to get the last five comments made by the user.
-             Comment.scope({method: ["lastFiveFor", id]}).all()
-             .then((comments) => {
-    // Store the result as before and send the object to the callback.
-               result["comments"] = comments;
-               callback(null, result);
-             })
-             .catch((err) => {
-               callback(err);
-             })
-           })
-         }
-       })
-     }
+  getUser(id, callback) {
+    let result = {};
+
+    User.findById(id)
+      .then((user) => {
+        if (!user) {
+          callback(404);
+        } else {
+          result["user"] = user;
+
+          Post.scope({ method: ["lastFiveFor", id] }).all()
+            .then((posts) => {
+              result["posts"] = posts;
+
+              Comment.scope({ method: ["lastFiveFor", id] }).all()
+                .then((comments) => {
+                  result["comments"] = comments;
+                })
+                .catch((err) => {
+                  callback(err);
+                })
+              Favorite.scope({method: ["lastFiveFor", id] }).all()
+                .then((favorites) => {
+                  result["favorites"] = favorites;
+                  callback(null, result);
+                })
+                .catch((err) => {
+                  callback(err);
+                })
+            })
+
+        }
+
+      })
+
+  }
 
 }
