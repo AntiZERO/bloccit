@@ -53,11 +53,11 @@ module.exports = (sequelize, DataTypes) => {
       });
     });
 
-     Post.afterCreate((post, callback) => {
+    Post.afterCreate((post, callback) => {
       return models.Vote.create({
         value: 1,
         postId: post.id,
-        userId: post.userId 
+        userId: post.userId
       });
     });
 
@@ -104,9 +104,26 @@ module.exports = (sequelize, DataTypes) => {
       });
   };
 
-  Post.prototype.getFavoriteFor = function(userId){
+  Post.prototype.getFavoriteFor = function (userId) {
     return this.favorites.find((favorite) => { return favorite.userId == userId });
   };
+
+  // Define the scope by calling `addScope` on the model. `addscope` takes the
+  // scope name as the first argument. The second argument can be an object
+  // with the query or a function. Using a function in this case since the
+  // `userId` will be variable.
+  Post.addScope("lastFiveFor", (userId) => {
+    // The function parameter returns the implemented query with the passed
+    // in `userId`
+    return {
+      where: { userId: userId },
+      // We set a `limit` which establishes the maximum number of records the
+      // query will return. `order` tells Sequelize what attribute to sort by
+      // and in which direction.
+      limit: 5,
+      order: [["createdAt", "DESC"]]
+    }
+  });
 
   return Post;
 };

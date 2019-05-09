@@ -79,14 +79,14 @@ describe("routes : votes", () => {
         };
         request.get(options,
           (err, res, body) => {
-            Vote.findOne({            // look for the vote, should not find one.
+            Vote.findOne({            // look for the vote, should find one vote, from the default behavior at post creation..
               where: {
                 userId: this.user.id,
                 postId: this.post.id
               }
             })
               .then((vote) => {
-                expect(vote).toBeNull();
+                expect(vote.value).toBe(1); // vote.value should equal 1 as guest should not create an upvote.
                 done();
               })
               .catch((err) => {

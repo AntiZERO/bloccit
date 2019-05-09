@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     }
 
   }, {});
-  Comment.associate = function(models) {
+  Comment.associate = function (models) {
     // associations can be defined here
     Comment.belongsTo(models.Post, {
       foreignKey: "postId",
@@ -30,8 +30,24 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: "CASCADE"
     });
 
+    Comment.addScope("lastFiveFor", (userId) => {
+
+      // Include the `Post` for each `Comment` so we can use it to build
+      // an anchor tap
+      // Scope Reference Sequelize: http://docs.sequelizejs.com/manual/scopes.html
+      return {
+        include: [{
+          model: models.Post
+        }],
+        where: { userId: userId },
+  
+        limit: 5,
+        order: [["createdAt", "DESC"]]
+      }
+    });
+    
   };
 
   return Comment;
-  
+
 };

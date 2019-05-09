@@ -13,9 +13,12 @@
           <a class="nav-link" href="/">Home</a>
         </li>
         <% if(currentUser) { %>
-         <li class="nav-item">
-          <a class="nav-link" href="/users/sign_out">Sign Out</a>
-         </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/users/<%= currentUser.id %>">Profile</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/users/sign_out">Sign Out</a>
+          </li>
         <% } else { %>
           <li class="nav-item">
             <a class="nav-link" href="/users/sign_up">Sign up</a>
